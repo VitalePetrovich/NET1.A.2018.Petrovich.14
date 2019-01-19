@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -7,48 +8,31 @@ using System.Threading.Tasks;
 
 namespace NET1.A._2018.Petrovich._14
 {
+    using System.Diagnostics;
+
     public static class FibonacciSequence
     {
-        public static TResult[] GetFibonacciSequence<TResult>(int lowIndex, int highIndex) where TResult : struct 
+        public static IEnumerable<BigInteger> Fibonacci(int count)
         {
-            if (lowIndex > highIndex)
-                throw new ArgumentException($"{nameof(highIndex)} must be greater than {nameof(lowIndex)}!");
+            if (count <= 0)
+                throw new ArgumentException($"{nameof(count)} must be greater than zero!");
 
-            int count = highIndex - lowIndex + 1;
-            TResult[] fibonacciSequence = new TResult[count];
-            
-            for (int i = 0; i < count; i++)
+            int.Parse((new BigInteger(1)).ToString());
+
+            return FibonacciCore(count);
+
+            IEnumerable<BigInteger> FibonacciCore(int N)
             {
-                try
-                {
-                    checked
-                    {
-                        fibonacciSequence[i] = ComputeFibonacciNumber<TResult>(lowIndex);
-                    }
-                }
-                catch (OverflowException e)
-                {
-                   throw new ArgumentException($"One of the numbers has overstepped the maximum allowable type range", e);
-                }
+                BigInteger first = 0, second = 1;
 
-                lowIndex++;
+                for (int i = 0; i < N; i++)
+                {
+                    BigInteger temp = first;
+                    first = second;
+                    second = temp + second;
+                    yield return temp;
+                }
             }
-
-            return fibonacciSequence;
-        }
-
-        private static TResult ComputeFibonacciNumber<TResult>(int indexOfNumberInSequence) where TResult : struct
-        {
-            const double goldenRatio = 1.61803;
-            //double goldenRatio = (1 + Math.Sqrt(5))/2;
-
-            return ConvertToTResult<TResult>((Math.Pow(goldenRatio, indexOfNumberInSequence) - Math.Pow(-goldenRatio, -indexOfNumberInSequence)) /
-                    (2 * goldenRatio - 1));
-        }
-
-        private static TResult ConvertToTResult<TResult>(object value)
-        {
-            return (TResult)Convert.ChangeType(value, typeof(TResult));
         }
     }
 }
